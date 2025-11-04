@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Role;
+use App\Models\Group;
+use App\Models\FileUpload;
 
 class User extends Authenticatable
 {
@@ -21,7 +24,30 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id'
     ];
+
+     public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'user_groups');
+    }
+
+    public function uploads()
+    {
+        return $this->hasMany(FileUpload::class);
+    }
+
+    public function getUsedStorageAttribute()
+    {
+        return $this->uploads()->sum('size');
+    }
+
+
 
     /**
      * The attributes that should be hidden for serialization.
